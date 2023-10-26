@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -16,6 +16,8 @@ import { UsersModule } from './users/users.module';
 import * as cors from 'cors';
 import { CategoryService } from './category/category.service';
 import { CategoryController } from './category/category.controller';
+
+import * as session from 'express-session';
 
 @Module({
   imports: [AuthModule, UsersModule],
@@ -38,9 +40,14 @@ import { CategoryController } from './category/category.controller';
   ],
 })
 export class AppModule {
-  configure(consumer) {
+  configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
+        session({
+          secret: process.env.KEY_SECRET_SESSION,
+          resave: false,
+          saveUninitialized: true,
+        }),
         cors({
           origin: '*',
         }),

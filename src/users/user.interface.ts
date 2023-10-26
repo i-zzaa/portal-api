@@ -3,3 +3,9 @@ export interface UserProps {
   login?: string;
   id: number;
 }
+
+
+export interface UserAuth {
+  User: string;
+  Password: string;
+}

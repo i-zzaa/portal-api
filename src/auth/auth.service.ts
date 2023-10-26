@@ -1,46 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { UserProps } from 'src/users/user.interface';
 import { JwtService } from '@nestjs/jwt';
-import * as crypto from 'crypto';
+import { Auth } from 'src/api/Api';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private jwtService: JwtService) {}
 
-  async login(user: UserProps) {
+  async login(user: any) {
     const payload = {
-      sub: user.id,
-      username: user.login,
-      id: user.id,
+      sub: user.ID,
+      username: user.UserLogin,
+      id: user.ID,
     };
 
     return {
       token: this.jwtService.sign(payload),
       user: {
         username: user.first_name,
-        id: user.id,
+        id: user.ID,
+        login: user.UserLogin,
       },
     };
   }
 
   async validateUser(username: string, password: string): Promise<any> {
     try {
-      const user = await this.usersService.findUserAuth(username);
+      const { data }: any = await Auth().post('auth/login', {
+        User: username,
+        Password: password,
+      });
 
-      if (!user) return null;
-
-      const hashedPassword = crypto
-        .createHash('sha256')
-        .update(password)
-        .digest('hex');
-
-      if (user && user.pw === hashedPassword) {
-        const { pw, ...result } = user;
-        return result;
+      if (Boolean(data.Me)) {
+        return data.Me;
       }
     } catch (error) {
       return null;
