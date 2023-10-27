@@ -1,15 +1,16 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('catalogo')
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
   @Get()
-  get() {
-    return this.catalogService.get();
+  get(@Request() req: any) {
+    const SessionID = req.session.SessionID;
+    return this.catalogService.get(SessionID);
   }
 
   @Get(':search')

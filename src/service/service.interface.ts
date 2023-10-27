@@ -11,7 +11,7 @@ export interface ServiceResponse {
 }
 
 export abstract class ServiceServiceInterface {
-  abstract getAll(): Promise<ServiceProps[]>;
+  abstract getAll(SessionValue: string): Promise<ServiceProps[]>;
   abstract get(cod: string): Promise<ServiceResponse[]>;
   abstract search(word: string, catalogCod: string): Promise<ServiceResponse[]>;
 }

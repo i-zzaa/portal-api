@@ -9,6 +9,10 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Request() req: any) {
+    req.session.SessionID = req.user.SessionID;
+
+    // delete req.user.SessionID;
+
     return await this.authService.login(req.user);
   }
 }

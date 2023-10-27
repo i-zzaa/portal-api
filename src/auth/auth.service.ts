@@ -6,7 +6,7 @@ import { Auth } from 'src/api/Api';
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
-  async login(user: any) {
+  async login({ user, SessionID }: any) {
     const payload = {
       sub: user.ID,
       username: user.UserLogin,
@@ -15,6 +15,7 @@ export class AuthService {
 
     return {
       token: this.jwtService.sign(payload),
+      SessionID,
       user: {
         username: user.first_name,
         id: user.ID,
@@ -31,7 +32,10 @@ export class AuthService {
       });
 
       if (Boolean(data.Me)) {
-        return data.Me;
+        return {
+          user: data.Me,
+          SessionID: data.SessionValue,
+        };
       }
     } catch (error) {
       return null;

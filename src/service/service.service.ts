@@ -1,20 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { ServiceProps, ServiceServiceInterface } from './service.interface';
+import { API } from 'src/api/Api';
 
 @Injectable()
 export class ServiceService implements ServiceServiceInterface {
   constructor(private readonly prismaService: PrismaService) {}
-  async getAll() {
-    return await this.prismaService.service.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
+
+  async getAll(SessionValue: string) {
+    const { data } = await API().post('Services/GetServiceList', SessionValue);
+
+    console.log(data);
+
+    return data;
+
+    // return await this.prismaService.service.findMany({
+    //   select: {
+    //     id: true,
+    //     name: true,
+    //   },
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
   }
 
   async get(cod: string) {

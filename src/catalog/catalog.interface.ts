@@ -11,6 +11,6 @@ export interface CatalogProps {
 }
 
 export abstract class CatalogServiceInterface {
-  abstract get(): Promise<any[]>;
+  abstract get(SessionValue: string): Promise<any[]>;
   abstract search(word: string): Promise<any[]>;
 }

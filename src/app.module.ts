@@ -18,6 +18,7 @@ import { CategoryService } from './category/category.service';
 import { CategoryController } from './category/category.controller';
 
 import * as session from 'express-session';
+import * as passport from 'passport';
 
 @Module({
   imports: [AuthModule, UsersModule],
@@ -51,6 +52,8 @@ export class AppModule {
         cors({
           origin: '*',
         }),
+        passport.initialize(),
+        passport.session(),
       ) // Aplica o middleware cors
       .forRoutes('*'); // Habilita o CORS para todas as rotas
   }
