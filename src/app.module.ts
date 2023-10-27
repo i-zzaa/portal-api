@@ -48,12 +48,11 @@ export class AppModule {
           secret: process.env.KEY_SECRET_SESSION,
           resave: false,
           saveUninitialized: true,
+          cookie: { secure: true },
         }),
         cors({
           origin: '*',
         }),
-        passport.initialize(),
-        passport.session(),
       ) // Aplica o middleware cors
       .forRoutes('*'); // Habilita o CORS para todas as rotas
   }

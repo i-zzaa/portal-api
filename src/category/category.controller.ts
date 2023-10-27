@@ -9,7 +9,7 @@ export class CategoryController {
 
   @Get(':catalogCod')
   get(@Param('catalogCod') catalogCod: string, @Req() req: any) {
-    const SessionID = req.session.SessionID;
+    const SessionID = req.user.session.SessionID;
 
     return this.categoryService.get(catalogCod, SessionID);
   }
@@ -20,8 +20,7 @@ export class CategoryController {
     @Param('catalogCod') catalogCod: string,
     @Req() req: any,
   ) {
-    const SessionID = req.session.SessionID;
-
+    const SessionID = req.user.session.SessionID;
     return this.categoryService.search(search, catalogCod, SessionID);
   }
 }

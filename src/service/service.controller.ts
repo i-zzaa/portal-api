@@ -9,8 +9,7 @@ export class ServiceController {
 
   @Get(':catalogCod')
   get(@Param('catalogCod') catalogCod: string, @Request() req: any) {
-    const SessionID = req.session.SessionID;
-
+    const SessionID = req.user.session.SessionID;
     return this.serviceService.get(catalogCod, SessionID);
   }
 
@@ -20,8 +19,7 @@ export class ServiceController {
     @Param('catalogCod') catalogCod: string,
     @Request() req: any,
   ) {
-    const SessionID = req.session.SessionID;
-
+    const SessionID = req.user.session.SessionID;
     return this.serviceService.search(search, catalogCod, SessionID);
   }
 }

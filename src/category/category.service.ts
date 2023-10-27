@@ -6,18 +6,24 @@ import { API } from 'src/api/Api';
 export class CategoryService implements CategoryServiceInterface {
   constructor() {}
 
-  formatData(data: any) {
+  formatData(data: any, cod: string) {
     const arrUnique = new Set();
     const categoryList = [];
 
     for (const category of data) {
       const split = category.Title.split('::');
+      const value = split[2];
 
-      if (split.length === 2 && !arrUnique.has(split[1])) {
-        arrUnique.add(split[1]);
+      if (
+        split.length === 3 &&
+        !arrUnique.has(value) &&
+        category.Title.includes(cod)
+      ) {
+        arrUnique.add(value);
         categoryList.push({
-          title: split[1],
+          title: value,
           id: category.ID,
+          cod: `${split[0]}::${split[1]}::${value}`,
         });
       }
     }
@@ -37,7 +43,7 @@ export class CategoryService implements CategoryServiceInterface {
       Name: cod,
     });
 
-    const result = this.formatData(data.Services);
+    const result = this.formatData(data.Services, cod);
 
     // Ordenar por title em ordem ascendente
     result.sort((a, b) => a.title.localeCompare(b.title));
@@ -51,7 +57,7 @@ export class CategoryService implements CategoryServiceInterface {
       Name: cod,
     });
 
-    const result = this.formatData(data.Services);
+    const result = this.formatData(data.Services, cod);
     const filter = await this.filterByKeyword(result, word);
 
     return filter;

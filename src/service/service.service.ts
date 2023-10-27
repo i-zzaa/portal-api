@@ -1,24 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
-import { ServiceProps, ServiceServiceInterface } from './service.interface';
+import { ServiceServiceInterface } from './service.interface';
 import { API } from 'src/api/Api';
 
 @Injectable()
 export class ServiceService implements ServiceServiceInterface {
   constructor() {}
 
-  formatData(data: any) {
+  formatData(data: any, cod: string) {
     const arrUnique = new Set();
     const serviceList = [];
 
     for (const service of data) {
       const split = service.Title.split('::');
+      const value = split[3];
 
-      if (split.length === 2 && !arrUnique.has(split[1])) {
-        arrUnique.add(split[1]);
+      if (
+        split.length === 4 &&
+        !arrUnique.has(value) &&
+        service.Title.includes(cod)
+      ) {
+        arrUnique.add(value);
         serviceList.push({
-          title: split[1],
+          title: value,
           id: service.ID,
+          cod: `${split[0]}::${split[1]}::${split[2]}::${value}`,
+
           icon: 'PhBrowsers',
         });
       }
@@ -39,7 +45,7 @@ export class ServiceService implements ServiceServiceInterface {
       Name: cod,
     });
 
-    const result = this.formatData(data.Services);
+    const result = this.formatData(data.Services, cod);
 
     // Ordenar por title em ordem ascendente
     result.sort((a, b) => a.title.localeCompare(b.title));
@@ -53,7 +59,7 @@ export class ServiceService implements ServiceServiceInterface {
       Name: cod,
     });
 
-    const result = this.formatData(data.Services);
+    const result = this.formatData(data.Services, cod);
     const filter = await this.filterByKeyword(result, word);
 
     return filter;

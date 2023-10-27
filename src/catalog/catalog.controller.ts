@@ -9,17 +9,13 @@ export class CatalogController {
 
   @Get()
   get(@Req() req: any) {
-    const SessionID = req.session.SessionID;
-
-    console.log('catalogo', req.session);
-
+    const SessionID = req.user.session.SessionID;
     return this.catalogService.get(SessionID);
   }
 
   @Get(':search')
   search(@Param('search') search: string, @Req() req: any) {
-    const SessionID = req.session.SessionID;
-
+    const SessionID = req.user.session.SessionID;
     return this.catalogService.search(search, SessionID);
   }
 }

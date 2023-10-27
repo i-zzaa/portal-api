@@ -11,8 +11,10 @@ export class AuthService {
       sub: user.ID,
       username: user.UserLogin,
       id: user.ID,
-      ChallengeToken,
-      SessionID,
+      session: {
+        ChallengeToken,
+        SessionID,
+      },
     };
 
     return {

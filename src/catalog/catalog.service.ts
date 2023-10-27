@@ -42,8 +42,6 @@ export class CatalogService implements CatalogServiceInterface {
         SessionID,
       });
 
-      console.log(data);
-
       const result = this.formatData(data.Services);
 
       // Ordenar por title em ordem ascendente
