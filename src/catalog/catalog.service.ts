@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
 import { CatalogServiceInterface } from './catalog.interface';
-import { ServiceService } from 'src/service/service.service';
 import { setIconCatalog } from 'src/util/util';
 import { API } from 'src/api/Api';
 
 @Injectable()
 export class CatalogService implements CatalogServiceInterface {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor() {}
 
   formatData(data: any) {
     const arrUnique = new Set();
@@ -39,16 +37,22 @@ export class CatalogService implements CatalogServiceInterface {
   }
 
   async get(SessionID: string) {
-    const { data } = await API().post('Services/GetServiceList', {
-      SessionID,
-    });
+    try {
+      const { data } = await API().post('Services/GetServiceList', {
+        SessionID,
+      });
 
-    const result = this.formatData(data.Services);
+      console.log(data);
 
-    // Ordenar por title em ordem ascendente
-    result.sort((a, b) => a.title.localeCompare(b.title));
+      const result = this.formatData(data.Services);
 
-    return result;
+      // Ordenar por title em ordem ascendente
+      result.sort((a, b) => a.title.localeCompare(b.title));
+
+      return result;
+    } catch (error) {
+      new Error(error.message);
+    }
   }
 
   async search(word: string, SessionID: string) {

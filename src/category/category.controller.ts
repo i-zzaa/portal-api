@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -8,7 +8,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get(':catalogCod')
-  get(@Param('catalogCod') catalogCod: string, @Request() req: any) {
+  get(@Param('catalogCod') catalogCod: string, @Req() req: any) {
     const SessionID = req.session.SessionID;
 
     return this.categoryService.get(catalogCod, SessionID);
@@ -18,7 +18,7 @@ export class CategoryController {
   search(
     @Param('search') search: string,
     @Param('catalogCod') catalogCod: string,
-    @Request() req: any,
+    @Req() req: any,
   ) {
     const SessionID = req.session.SessionID;
 

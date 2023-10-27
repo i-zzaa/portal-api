@@ -6,18 +6,21 @@ import { Auth } from 'src/api/Api';
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
-  async login({ user, SessionID }: any) {
+  async login({ user, SessionID, ChallengeToken }: any) {
     const payload = {
       sub: user.ID,
       username: user.UserLogin,
       id: user.ID,
+      ChallengeToken,
+      SessionID,
     };
 
     return {
       token: this.jwtService.sign(payload),
       SessionID,
+      ChallengeToken,
       user: {
-        username: user.first_name,
+        username: user.FirstName,
         id: user.ID,
         login: user.UserLogin,
       },
@@ -31,12 +34,28 @@ export class AuthService {
         Password: password,
       });
 
-      if (Boolean(data.Me)) {
+      if (
+        Boolean(data.Me) &&
+        Boolean(data.SessionValue) &&
+        Boolean(data.ChallengeToken)
+      ) {
         return {
           user: data.Me,
           SessionID: data.SessionValue,
+          ChallengeToken: data.ChallengeToken,
         };
       }
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async logout(SessionID: string, ChallengeToken: string) {
+    try {
+      await Auth().post('auth/logout', {
+        SessionID,
+        ChallengeToken,
+      });
     } catch (error) {
       return null;
     }

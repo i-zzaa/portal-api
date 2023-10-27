@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -8,13 +8,16 @@ export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
   @Get()
-  get(@Request() req: any) {
+  get(@Req() req: any) {
     const SessionID = req.session.SessionID;
+
+    console.log('catalogo', req.session);
+
     return this.catalogService.get(SessionID);
   }
 
   @Get(':search')
-  search(@Param('search') search: string, @Request() req: any) {
+  search(@Param('search') search: string, @Req() req: any) {
     const SessionID = req.session.SessionID;
 
     return this.catalogService.search(search, SessionID);

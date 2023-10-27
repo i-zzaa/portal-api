@@ -7,20 +7,21 @@ import { LocalStrategy } from './local.strategy';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { SessionSerializer } from './session.serializer';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
-    PassportModule,
     JwtModule.register({
       privateKey: process.env.JWT_PRIVATE_KEY,
       signOptions: {
         expiresIn: process.env.EXPIRES_IN_SECONDS,
       },
     }),
+    PassportModule.register({ session: true }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, SessionSerializer],
   controllers: [AuthController],
 })
 export class AuthModule {}
