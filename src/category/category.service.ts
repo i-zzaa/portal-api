@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
 import { CategoryServiceInterface } from './category.interface';
-import { ServiceService } from 'src/service/service.service';
-import { setIconCatalog } from 'src/util/util';
 import { API } from 'src/api/Api';
 
 @Injectable()

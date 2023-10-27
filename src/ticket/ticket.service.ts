@@ -1,75 +1,41 @@
-import { Injectable, Req } from '@nestjs/common';
-import {
-  TicketCreateProps,
-  TicketGetProps,
-  TicketServiceInterface,
-} from './ticket.interface';
-import { PrismaService } from 'src/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { TicketCreateProps, TicketServiceInterface } from './ticket.interface';
 import { setIconStatus } from 'src/util/util';
 import { formatDate } from 'src/util/format-date';
+import { API } from 'src/api/Api';
 
 @Injectable()
 export class TicketService implements TicketServiceInterface {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor() {}
 
-  async create(body: TicketCreateProps) {
-    // return await this.prismaService.ticket.create({
-    //   data: body,
-    // });
+  async create(body: TicketCreateProps, SessionID: string) {
+    const { data } = await API().post('Tickets/CreateTicket', {
+      SessionID,
+      ...body,
+    });
   }
 
-  async get({ pageSize, currentPage }: any, userId: number) {
-    const response: any[] = await this.prismaService.ticket.findMany({
-      select: {
-        id: true,
-        tn: true,
-        title: true,
-        create_time: true,
-        ticket_priority: {
-          select: {
-            name: true,
-          },
-        },
-        ticket_type: {
-          select: {
-            name: true,
-          },
-        },
-        ticket_state: {
-          select: {
-            name: true,
-          },
-        },
-        queue: {
-          select: {
-            name: true,
-          },
-        },
-        responsible_user_id: true,
-      },
-      orderBy: {
-        create_time: 'asc',
-      },
-      where: {
-        user_id: userId,
-      },
+  async get({ pageSize, currentPage }: any, userId: number, SessionID: string) {
+    const { data } = await API().post('Tickets/CreateTicket', {
+      SessionID,
+      CustomerGetTicketList: '1',
     });
 
-    const data = await Promise.all(
-      response.map((ticket: any) => {
+    const result = await Promise.all(
+      data.Tickets.map((ticket: any) => {
         const item = setIconStatus(ticket);
-        const date = formatDate(ticket.create_time);
+        const date = formatDate(ticket.CreatedServer);
 
         return {
-          id: ticket.id,
-          title: ticket.title,
-          ticket: ticket.tn,
-          status: ticket.ticket_state.name,
+          id: ticket.TicketID,
+          title: ticket.Title,
+          ticket: ticket.TicketNumber,
+          status: ticket.ticket_state,
 
-          type: ticket.ticket_type.name,
-          priority: ticket.ticket_priority.name,
+          type: ticket.State,
+          priority: ticket.Priority,
           attendant: '',
-          queue: ticket.queue.name,
+          queue: ticket.Queue,
           date,
           userId: userId,
           color: item.color,
@@ -81,11 +47,11 @@ export class TicketService implements TicketServiceInterface {
               ticketId: 3,
 
               title: 'Teste',
-              attendant: 'teste',
-              queue: '',
+              attendant: ticket.Responsible,
+              queue: ticket.Queue,
               detalhe: '',
-              date: '',
-              status: ticket.ticket_state.name,
+              date,
+              status: ticket.State,
             },
           ],
         };

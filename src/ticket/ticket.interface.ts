@@ -29,28 +29,28 @@ export interface TicketProps {
 export class TicketCreateProps {
   @IsString()
   @IsNotEmpty()
-  readonly title: string;
+  readonly Title: string;
 
   @IsString()
-  readonly type: string;
+  readonly subject: string;
 
   @IsString()
-  readonly priority: string;
+  readonly QueueID: number;
 
   @IsString()
-  readonly attendant: string;
+  readonly PriorityID: number;
 
   @IsString()
-  readonly queue: string;
+  readonly Body: string;
 
   @IsString()
-  readonly date: string;
+  readonly CustomerCreateTicket: number;
 
-  @IsString()
-  readonly status: string;
+  // @IsString()
+  // readonly status: string;
 
-  @IsNumber()
-  readonly userId: number;
+  // @IsNumber()
+  // readonly userId: number;
 }
 
 export class TicketGetProps {
@@ -64,7 +64,7 @@ export class TicketGetProps {
 }
 
 export abstract class TicketServiceInterface {
-  abstract create(body: TicketCreateProps);
-  abstract get(pag: any, userId: number);
-  abstract search(word: string, userId: number);
+  abstract create(body: TicketCreateProps, SessionID: string);
+  abstract get(pag: any, userId: number, SessionID: string);
+  abstract search(word: string, userId: number, SessionID: string);
 }
