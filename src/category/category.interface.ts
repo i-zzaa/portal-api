@@ -11,6 +11,6 @@ export interface CategoryProps {
 }
 
 export abstract class CategoryServiceInterface {
-  abstract get(cod: string): Promise<any[]>;
-  abstract search(word: string, cod: string): Promise<any[]>;
+  abstract get(cod: string, SessionID: string): Promise<any[]>;
+  abstract search(word: string, cod: string, SessionID: string): Promise<any[]>;
 }

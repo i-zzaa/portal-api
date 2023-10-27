@@ -5,94 +5,57 @@ import { API } from 'src/api/Api';
 
 @Injectable()
 export class ServiceService implements ServiceServiceInterface {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor() {}
 
-  async getAll(SessionValue: string) {
-    const { data } = await API().post('Services/GetServiceList', SessionValue);
-
-    console.log(data);
-
-    return data;
-
-    // return await this.prismaService.service.findMany({
-    //   select: {
-    //     id: true,
-    //     name: true,
-    //   },
-    //   orderBy: {
-    //     name: 'asc',
-    //   },
-    // });
-  }
-
-  async get(cod: string) {
-    const response: ServiceProps[] = await this.prismaService.service.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-      where: {
-        name: {
-          contains: cod,
-        },
-      },
-    });
-
+  formatData(data: any) {
     const arrUnique = new Set();
     const serviceList = [];
 
-    for (const service of response) {
-      const split = service.name.split('::');
+    for (const service of data) {
+      const split = service.Title.split('::');
 
-      if (!arrUnique.has(split[2])) {
-        arrUnique.add(split[2]);
+      if (split.length === 2 && !arrUnique.has(split[1])) {
+        arrUnique.add(split[1]);
         serviceList.push({
-          cod: `${split[0]}::${split[1]}::${split[2]}`,
-          title: split[2],
-          id: service.id,
+          title: split[1],
+          id: service.ID,
           icon: 'PhBrowsers',
-          // description: '', //split[3],
         });
       }
     }
 
-    // Ordenar por title em ordem ascendente
-    serviceList.sort((a, b) => a.title.localeCompare(b.title));
-
     return serviceList;
   }
-  async search(word: string, catalogCod: string) {
-    const response: ServiceProps[] = await this.prismaService.service.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-      where: {
-        name: {
-          contains: catalogCod,
-        },
-        OR: [
-          {
-            name: {
-              contains: word,
-            },
-          },
-        ],
-      },
+
+  filterByKeyword(data: any, keyword: any) {
+    keyword = keyword.toLowerCase();
+
+    return data.filter((item) => item.title.toLowerCase().includes(keyword));
+  }
+
+  async get(cod: string, SessionID: string) {
+    const { data } = await API().post('Services/GetServiceList', {
+      SessionID,
+      Name: cod,
     });
 
-    return await Promise.all(
-      response.map((catalog: ServiceProps) => {
-        const split = catalog.name.split('::');
+    const result = this.formatData(data.Services);
 
-        return {
-          cod: split[0] + split[1] + split[2] + split[3],
-          title: split[4],
-          id: catalog.id,
-        };
-      }),
-    );
+    // Ordenar por title em ordem ascendente
+    result.sort((a, b) => a.title.localeCompare(b.title));
+
+    return result;
+  }
+
+  async search(word: string, cod: string, SessionID: string) {
+    const { data } = await API().post('Services/GetServiceList', {
+      SessionID,
+      Name: cod,
+    });
+
+    const result = this.formatData(data.Services);
+    const filter = await this.filterByKeyword(result, word);
+
+    return filter;
   }
 }
