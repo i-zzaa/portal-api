@@ -14,7 +14,9 @@ export class CatalogController {
   }
 
   @Get(':search')
-  search(@Param('search') search: string) {
-    return this.catalogService.search(search);
+  search(@Param('search') search: string, @Request() req: any) {
+    const SessionID = req.session.SessionID;
+
+    return this.catalogService.search(search, SessionID);
   }
 }

@@ -3,27 +3,17 @@ import { PrismaService } from 'src/prisma.service';
 import { CatalogServiceInterface } from './catalog.interface';
 import { ServiceService } from 'src/service/service.service';
 import { setIconCatalog } from 'src/util/util';
-import axios from 'axios';
 import { API } from 'src/api/Api';
 
 @Injectable()
 export class CatalogService implements CatalogServiceInterface {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly serviceService: ServiceService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async get(SessionID: string) {
-    console.log(SessionID);
-
-    const { data } = await API().post('Services/GetServiceList', {
-      SessionID: 'jegyLIFafRj3ny2yKfnVfPQYjgIkbIK1',
-    });
-
+  formatData(data: any) {
     const arrUnique = new Set();
     const categoryList = [];
 
-    for (const catalog of data.Services) {
+    for (const catalog of data) {
       const split = catalog.Title.split('::');
 
       if (split.length === 2 && !arrUnique.has(split[1])) {
@@ -39,26 +29,36 @@ export class CatalogService implements CatalogServiceInterface {
       }
     }
 
-    // Ordenar por title em ordem ascendente
-    categoryList.sort((a, b) => a.title.localeCompare(b.title));
-
     return categoryList;
   }
 
-  async search(word: string) {
-    return await this.prismaService.general_catalog.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-      where: {
-        OR: [
-          {
-            name: {
-              contains: word,
-            },
-          },
-        ],
-      },
+  filterByKeyword(data: any, keyword: any) {
+    keyword = keyword.toLowerCase();
+
+    return data.filter((item) => item.title.toLowerCase().includes(keyword));
+  }
+
+  async get(SessionID: string) {
+    const { data } = await API().post('Services/GetServiceList', {
+      SessionID,
     });
+
+    const result = this.formatData(data.Services);
+
+    // Ordenar por title em ordem ascendente
+    result.sort((a, b) => a.title.localeCompare(b.title));
+
+    return result;
+  }
+
+  async search(word: string, SessionID: string) {
+    const { data } = await API().post('Services/GetServiceList', {
+      SessionID,
+    });
+
+    const result = await this.formatData(data.Services);
+    const filter = await this.filterByKeyword(result, word);
+
+    return filter;
   }
 }
