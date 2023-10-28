@@ -128,5 +128,22 @@ export class TicketService implements TicketServiceInterface {
       SessionID,
       CustomerGetTicketList: process.env.CustomerGetTicketList,
     });
+
+    const filter = await this.filterByKeyword(data.Tickets, word);
+    const result = this.formatTicket(filter, word);
+
+    return result;
+  }
+
+  async filterByKeyword(data: any, keyword: any) {
+    return await Promise.all(
+      data.filter((objeto) => {
+        return Object.values(objeto).some(
+          (valor) =>
+            typeof valor === 'string' &&
+            valor.toLowerCase().includes(keyword.toLowerCase()),
+        );
+      }),
+    );
   }
 }
