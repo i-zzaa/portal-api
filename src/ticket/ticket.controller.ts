@@ -7,10 +7,13 @@ import {
   UseGuards,
   Query,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
-import { TicketCreateProps, TicketGetProps } from './ticket.interface';
+import { TicketDTO, TicketGetProps } from './ticket.interface';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('ticket')
 @UseGuards(AuthGuard('jwt'))
@@ -25,10 +28,14 @@ export class TicketController {
   }
 
   @Post()
-  create(@Body() body: TicketCreateProps, @Request() req: any) {
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body('form') formData: any,
+    @Request() req: any,
+    @UploadedFile('file') file: any,
+  ) {
     const SessionID = req.user.session.SessionID;
-
-    return this.ticketService.create(body, SessionID);
+    return this.ticketService.create(formData, file, SessionID);
   }
 
   @Get('search/:search')

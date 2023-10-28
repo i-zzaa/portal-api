@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TicketCreateProps, TicketServiceInterface } from './ticket.interface';
+import { TicketServiceInterface } from './ticket.interface';
 import { setIconStatus } from 'src/util/util';
 import { formatDate } from 'src/util/format-date';
 import { API } from 'src/api/Api';
@@ -8,24 +8,47 @@ import { API } from 'src/api/Api';
 export class TicketService implements TicketServiceInterface {
   constructor() {}
 
-  async create(body: TicketCreateProps, SessionID: string) {
-    const { data } = await API().post('Tickets/CreateTicket', {
+  async create(formData: any, file: any, SessionID: string) {
+    const { data } = await API().post('/Tickets/CreateTicket', {
       SessionID,
-      ...body,
+      CustomerGetTicketList: process.env.CustomerGetTicketList,
+
+      PriorityID: formData.id,
+      TypeID: formData.TypeID,
+      StateID: formData.id,
+      QueueID: formData.id,
+
+      SLAID: 1,
+      ServiceID: formData.codService,
+      CustomerUserID: formData.id,
+      Title: formData.subject,
+      Body: formData.detail,
+      DynamicFields: {
+        Telefone: formData.telephone,
+        Ramal: formData.extension,
+        IP: formData.id,
+        Patrimonio: formData.patrimony,
+      },
+    });
+
+    await API().post('/Tickets/CreateAttachment', {
+      SessionID,
+      TicketID: data.TicketID,
+      ArticleID: data.ArticleID,
+      File: {
+        Filename: formData?.filename,
+        ContentType: 'text/plain',
+        Content: file,
+      },
     });
   }
 
-  async get({ pageSize, currentPage }: any, SessionID: string) {
-    const { data } = await API().post('/Tickets/GetTicketList', {
-      SessionID,
-      CustomerGetTicketList: process.env.CustomerGetTicketList,
-    });
-
+  async formatTicket(pageSize: any, currentPage: any, data: any) {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const paginatedItems = data.Tickets.slice(startIndex, endIndex);
+    const paginatedItems = data.slice(startIndex, endIndex);
 
-    const result = await Promise.all(
+    return await Promise.all(
       paginatedItems.map((ticket: any) => {
         const item = setIconStatus(ticket);
         const date = formatDate(ticket.Created);
@@ -61,6 +84,15 @@ export class TicketService implements TicketServiceInterface {
         };
       }),
     );
+  }
+
+  async get({ pageSize, currentPage }: any, SessionID: string) {
+    const { data } = await API().post('/Tickets/GetTicketList', {
+      SessionID,
+      CustomerGetTicketList: process.env.CustomerGetTicketList,
+    });
+
+    const result = await this.formatTicket(pageSize, currentPage, data.Tickets);
 
     return {
       data: result,
@@ -69,14 +101,9 @@ export class TicketService implements TicketServiceInterface {
     };
   }
   async search(word: string, SessionID: string) {
-    // return new Promise((resolve, reject) => {
-    //   const filter = this.tickets.filter(
-    //     ({ ticket, title, status }: any) =>
-    //       ticket.includes(word) ||
-    //       title.includes(word) ||
-    //       status.includes(word),
-    //   );
-    //   resolve(filter);
-    // });
+    const { data } = await API().post('/Tickets/GetTicketList', {
+      SessionID,
+      CustomerGetTicketList: process.env.CustomerGetTicketList,
+    });
   }
 }
