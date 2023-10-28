@@ -63,6 +63,8 @@ export class TicketService implements TicketServiceInterface {
           ticket: ticket.TicketNumber,
           status: ticket.State,
 
+          detail: ticket.Body || '-',
+
           type: ticket.Type,
           priority: ticket.Priority,
           attendant: ticket.Owner,
@@ -72,7 +74,7 @@ export class TicketService implements TicketServiceInterface {
           color: item.color,
           icon: item.icon,
 
-          detail: [
+          details: [
             {
               id: 2,
               ticketId: 3,
