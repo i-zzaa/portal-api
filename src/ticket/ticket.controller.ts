@@ -20,11 +20,18 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
-  @Get()
-  get(@Query() query: TicketGetProps, @Request() req: any) {
+  @Get('all')
+  getAll(@Query() query: TicketGetProps, @Request() req: any) {
     const SessionID = req.user.session.SessionID;
 
-    return this.ticketService.get(query, SessionID);
+    return this.ticketService.getAll(query, SessionID);
+  }
+
+  @Get(':id')
+  get(@Param('id') id: number, @Request() req: any) {
+    const SessionID = req.user.session.SessionID;
+
+    return this.ticketService.get(id, SessionID);
   }
 
   @Post()

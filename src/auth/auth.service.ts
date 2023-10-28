@@ -19,8 +19,6 @@ export class AuthService {
 
     return {
       token: this.jwtService.sign(payload),
-      SessionID,
-      ChallengeToken,
       user: {
         username: user.FirstName,
         id: user.ID,

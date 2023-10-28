@@ -13,12 +13,12 @@ export class TicketService implements TicketServiceInterface {
       SessionID,
       CustomerGetTicketList: process.env.CustomerGetTicketList,
 
-      PriorityID: formData.id,
-      TypeID: formData.TypeID,
-      StateID: formData.id,
-      QueueID: formData.id,
-
+      PriorityID: '3',
+      TypeID: '4',
+      StateID: '1',
+      QueueID: '1',
       SLAID: 1,
+
       ServiceID: formData.codService,
       CustomerUserID: formData.id,
       Title: formData.subject,
@@ -34,19 +34,23 @@ export class TicketService implements TicketServiceInterface {
     await API().post('/Tickets/CreateAttachment', {
       SessionID,
       TicketID: data.TicketID,
-      ArticleID: data.ArticleID,
+      ArticleID: 13,
       File: {
         Filename: formData?.filename,
         ContentType: 'text/plain',
         Content: file,
       },
     });
+
+    return data;
   }
 
-  async formatTicket(pageSize: any, currentPage: any, data: any) {
+  async formatTicket(data: any, pageSize: any = 0, currentPage: any = 0) {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const paginatedItems = data.slice(startIndex, endIndex);
+
+    const paginatedItems =
+      pageSize > 0 ? data.slice(startIndex, endIndex) : data;
 
     return await Promise.all(
       paginatedItems.map((ticket: any) => {
@@ -76,9 +80,11 @@ export class TicketService implements TicketServiceInterface {
               title: 'Teste',
               attendant: ticket.Responsible,
               queue: ticket.Queue,
-              detalhe: '',
+              detalhe: ticket.Body || '-',
               date,
               status: ticket.State,
+              icon: setIconStatus(ticket, 'icon'),
+              color: setIconStatus(ticket, 'color'),
             },
           ],
         };
@@ -86,13 +92,13 @@ export class TicketService implements TicketServiceInterface {
     );
   }
 
-  async get({ pageSize, currentPage }: any, SessionID: string) {
+  async getAll({ pageSize, currentPage }: any, SessionID: string) {
     const { data } = await API().post('/Tickets/GetTicketList', {
       SessionID,
       CustomerGetTicketList: process.env.CustomerGetTicketList,
     });
 
-    const result = await this.formatTicket(pageSize, currentPage, data.Tickets);
+    const result = await this.formatTicket(data.Tickets, pageSize, currentPage);
 
     return {
       data: result,
@@ -100,6 +106,23 @@ export class TicketService implements TicketServiceInterface {
       currentPage: currentPage,
     };
   }
+
+  async get(id: number, SessionID: string) {
+    const { data } = await API().post('/Tickets/GetTicket', {
+      SessionID,
+      CustomerGetTicketList: process.env.CustomerGetTicketList,
+      TicketID: id,
+      DynamicFields: '1',
+      Extended: '1',
+    });
+
+    const result = await this.formatTicket(data.Tickets);
+
+    return {
+      data: result,
+    };
+  }
+
   async search(word: string, SessionID: string) {
     const { data } = await API().post('/Tickets/GetTicketList', {
       SessionID,

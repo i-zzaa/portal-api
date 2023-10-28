@@ -16,7 +16,7 @@ export function removeStringRepeted(array, propriedade) {
 }
 
 export enum STATUS {
-  new = 'New',
+  new = 'new',
   closed_successful = 'closed successful',
   closed_unsuccessful = 'closed unsuccessful',
   open = 'open',
@@ -26,26 +26,26 @@ export enum STATUS {
   pending_auto_close_mero = 'pending auto close-',
   merged = 'merged',
   closed_with_workaround = 'closed with workaround',
-  aberto = 'Aberto',
-  em_andamento = 'Em andamento',
-  encerrado_old = 'Encerrado-Old',
-  encerrado = 'Encerrado',
-  reaberto = 'Reaberto',
-  pendente = 'Pendente',
-  aguardando_aprovacao = 'Aguardando aprovação',
-  aguardando_aprovacao_ccm = 'Aguardando aprovação CCM',
-  em_planejamento = 'Em planejamento',
-  em_revisao = 'Em revisão',
-  novo = 'Novo',
-  resolvido = 'Resolvido',
-  aprovado = 'Aprovado',
-  cancelado = 'Cancelado',
-  reajustar = 'Reajustar',
-  concluido = 'Concluído',
+  aberto = 'aberto',
+  em_andamento = 'em andamento',
+  encerrado_old = 'encerrado-Old',
+  encerrado = 'encerrado',
+  reaberto = 'reaberto',
+  pendente = 'pendente',
+  aguardando_aprovacao = 'aguardando aprovação',
+  aguardando_aprovacao_ccm = 'aguardando aprovação CCM',
+  em_planejamento = 'em planejamento',
+  em_revisao = 'em revisão',
+  novo = 'novo',
+  resolvido = 'resolvido',
+  aprovado = 'aprovado',
+  cancelado = 'cancelado',
+  reajustar = 'reajustar',
+  concluido = 'concluído',
 }
 
-export function setIconStatus(item) {
-  switch (item.State) {
+export function setIconStatus(item, type?: 'icon' | 'color') {
+  switch (item.State.toLowerCase()) {
     case STATUS.reaberto:
     case STATUS.pending_reminder:
     case STATUS.pending_auto_close_plus:
@@ -90,7 +90,7 @@ export function setIconStatus(item) {
       break;
   }
 
-  return item;
+  return type ? item[type] : item;
 }
 
 export enum CATALOG {
