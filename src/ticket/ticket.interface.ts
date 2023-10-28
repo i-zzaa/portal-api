@@ -65,6 +65,6 @@ export class TicketGetProps {
 
 export abstract class TicketServiceInterface {
   abstract create(body: TicketCreateProps, SessionID: string);
-  abstract get(pag: any, userId: number, SessionID: string);
-  abstract search(word: string, userId: number, SessionID: string);
+  abstract get(pag: any, SessionID: string);
+  abstract search(word: string, SessionID: string);
 }

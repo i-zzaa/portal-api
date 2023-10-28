@@ -45,7 +45,7 @@ export enum STATUS {
 }
 
 export function setIconStatus(item) {
-  switch (item.ticket_state.name) {
+  switch (item.State) {
     case STATUS.reaberto:
     case STATUS.pending_reminder:
     case STATUS.pending_auto_close_plus:

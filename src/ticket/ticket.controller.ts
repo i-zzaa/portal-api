@@ -19,22 +19,22 @@ export class TicketController {
 
   @Get()
   get(@Query() query: TicketGetProps, @Request() req: any) {
-    const SessionID = req.session.SessionID;
+    const SessionID = req.user.session.SessionID;
 
-    return this.ticketService.get(query, req.user.sub, SessionID);
+    return this.ticketService.get(query, SessionID);
   }
 
   @Post()
   create(@Body() body: TicketCreateProps, @Request() req: any) {
-    const SessionID = req.session.SessionID;
+    const SessionID = req.user.session.SessionID;
 
     return this.ticketService.create(body, SessionID);
   }
 
   @Get('search/:search')
   search(@Param('search') search: string, @Request() req: any) {
-    const SessionID = req.session.SessionID;
+    const SessionID = req.user.session.SessionID;
 
-    return this.ticketService.search(search);
+    return this.ticketService.search(search, SessionID);
   }
 }
