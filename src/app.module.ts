@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -9,18 +9,21 @@ import { ServiceController } from './service/service.controller';
 import { TicketController } from './ticket/ticket.controller';
 import { ServiceService } from './service/service.service';
 import { TicketService } from './ticket/ticket.service';
-import { PrismaService } from './prisma.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 
 import * as cors from 'cors';
+import { CategoryService } from './category/category.service';
+import { CategoryController } from './category/category.controller';
+
+import * as session from 'express-session';
 
 @Module({
-  imports: [AuthModule, UsersModule],
+  imports: [AuthModule],
   controllers: [
     TicketController,
     ServiceController,
     CatalogController,
+    CategoryController,
 
     AppController,
   ],
@@ -28,21 +31,23 @@ import * as cors from 'cors';
     TicketService,
     ServiceService,
     CatalogService,
+    CategoryService,
 
-    PrismaService,
     AppService,
   ],
 })
 export class AppModule {
-  configure(consumer) {
+  configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
+        session({
+          secret: process.env.KEY_SECRET_SESSION,
+          resave: false,
+          saveUninitialized: true,
+          cookie: { secure: true },
+        }),
         cors({
-          origin: [
-            'http://127.0.0.1:5173',
-            'https://fbuots.hospedagemelastica.com.br/',
-          ],
-          credentials: true,
+          origin: '*',
         }),
       ) // Aplica o middleware cors
       .forRoutes('*'); // Habilita o CORS para todas as rotas

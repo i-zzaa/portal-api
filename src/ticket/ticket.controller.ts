@@ -6,28 +6,56 @@ import {
   Body,
   UseGuards,
   Query,
+  Request,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
-import { TicketCreateProps, TicketGetProps } from './ticket.interface';
-import { AutheticatedGuard } from 'src/auth/autheticated.guard';
+import { TicketDTO, TicketGetProps } from './ticket.interface';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('ticket')
-@UseGuards(AutheticatedGuard)
+@UseGuards(AuthGuard('jwt'))
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
-  @Get()
-  get(@Query() query: TicketGetProps) {
-    return this.ticketService.get(query);
+  @Get('all')
+  getAll(@Query() query: TicketGetProps, @Request() req: any) {
+    const SessionID = req.user.session.SessionID;
+
+    return this.ticketService.getAll(query, SessionID);
+  }
+
+  @Get(':id')
+  get(@Param('id') id: number, @Request() req: any) {
+    const SessionID = req.user.session.SessionID;
+
+    return this.ticketService.get(id, SessionID);
   }
 
   @Post()
-  create(@Body() body: TicketCreateProps) {
-    return this.ticketService.create(body);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body('form') formData: any,
+    @Request() req: any,
+    @UploadedFile() file,
+  ) {
+    const SessionID = req.user.session.SessionID;
+    const userID = req.user.sub;
+
+    return this.ticketService.create(
+      JSON.parse(formData),
+      file,
+      SessionID,
+      userID,
+    );
   }
 
   @Get('search/:search')
-  search(@Param('search') search: string) {
-    return this.ticketService.search(search);
+  search(@Param('search') search: string, @Request() req: any) {
+    const SessionID = req.user.session.SessionID;
+
+    return this.ticketService.search(search, SessionID);
   }
 }

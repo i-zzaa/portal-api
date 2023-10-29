@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { AutheticatedGuard } from 'src/auth/autheticated.guard';
 
@@ -7,16 +7,19 @@ import { AutheticatedGuard } from 'src/auth/autheticated.guard';
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
-  @Get(':catalogId')
-  get(@Param('catalogId') catalogId: number) {
-    return this.serviceService.get(Number(catalogId));
+  @Get(':catalogCod')
+  get(@Param('catalogCod') catalogCod: string, @Request() req: any) {
+    const SessionID = req.user.session.SessionID;
+    return this.serviceService.get(catalogCod, SessionID);
   }
 
-  @Get(':search/:catalogId')
+  @Get(':search/:catalogCod')
   search(
     @Param('search') search: string,
-    @Param('catalogId') catalogId: number,
+    @Param('catalogCod') catalogCod: string,
+    @Request() req: any,
   ) {
-    return this.serviceService.search(search, catalogId);
+    const SessionID = req.user.session.SessionID;
+    return this.serviceService.search(search, catalogCod, SessionID);
   }
 }

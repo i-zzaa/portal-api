@@ -1,219 +1,198 @@
 import { Injectable } from '@nestjs/common';
-import {
-  TicketCreateProps,
-  TicketGetProps,
-  TicketServiceInterface,
-} from './ticket.interface';
-import { PrismaService } from 'src/prisma.service';
+import { TicketDTO, TicketServiceInterface } from './ticket.interface';
+import { setIconStatus } from 'src/util/util';
+import { formatDate } from 'src/util/format-date';
+import { API } from 'src/api/Api';
 
 @Injectable()
 export class TicketService implements TicketServiceInterface {
-  private tickets = [
-    {
-      id: 1,
-      ticket: '202303015000057',
-      title: '[PORTAL] Solicitação de Atendimento:: teste',
-      tipo: 'Requisição',
-      status: 'Reaberto',
-      prioridade: '3 Média',
-      date: '01/03/2023 12:01:07',
-      detail: [
-        {
-          title: 'Nota 1',
-          status: 'Reaberto',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          title: 'Nota 2',
-          status: 'Resolvido',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          title: 'Nota 3',
-          status: 'Novo',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-      ],
-    },
-    {
-      id: 2,
-      ticket: '202112085000024',
-      title: 'Teste',
-      tipo: 'Solicitação',
-      status: 'Encerrado',
-      prioridade: '3 Média',
-      date: '17/05/2021 15:25:00',
-      detail: [
-        {
-          status: 'Reaberto',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Resolvido',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Novo',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-      ],
-    },
-    {
-      id: 3,
-      ticket: '202112085000024',
-      title: 'Teste',
-      tipo: 'Solicitação',
-      status: 'Reaberto',
-      prioridade: '3 Média',
-      date: '17/05/2021 15:25:00',
-      detail: [
-        {
-          status: 'Reaberto',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Resolvido',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Novo',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-      ],
-    },
-    {
-      id: 4,
-      ticket: '202112085000024',
-      title: 'Teste',
-      tipo: 'Solicitação',
-      status: 'Reaberto',
-      prioridade: '3 Média',
-      date: '17/05/2021 15:25:00',
-      detail: [
-        {
-          status: 'Reaberto',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Resolvido',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Novo',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-      ],
-    },
-    {
-      id: 4,
-      ticket: '202112085000024',
-      title: 'Teste',
-      tipo: 'Solicitação',
-      status: 'Reaberto',
-      prioridade: '3 Média',
-      date: '17/05/2021 15:25:00',
-      detail: [
-        {
-          status: 'Reaberto',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Resolvido',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-        {
-          status: 'Novo',
-          fila: 'Prodam - NOC',
-          atendente: 'Leonardo Lima',
-          detalhe:
-            '[202303015000057] Observação sobre o ticket: [Reabertura de Ticket] Oi atendimento, atendimento Prodam escreveu: > [Reabertura de Ticket]: > CHamado nao resolvido [1]http://otrs-customer-prodam.ios.com.br/ Desenvolvido por OTRS 6 [1] http://otrs-customer-prodam.ios.com.br/',
-          date: '01/03/2023 12:11:35',
-        },
-      ],
-    },
-  ];
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor() {}
 
-  async create(body: TicketCreateProps) {
-    return await this.prismaService.ticket.create({
-      data: body,
+  async create(
+    formData: TicketDTO,
+    file: any,
+    SessionID: string,
+    userID: number,
+  ) {
+    const { data } = await API().post('/Tickets/CreateTicket', {
+      SessionID,
+      CustomerGetTicketList: process.env.CustomerGetTicketList,
+
+      PriorityID: '3',
+      TypeID: '4',
+      StateID: '1',
+      QueueID: '1',
+      SLAID: 1,
+
+      ServiceID: formData.codService,
+      CustomerUserID: userID,
+      Title: formData.subject,
+      Body: formData.detail,
+      DynamicFields: {
+        Telefone: formData?.telephone,
+        Ramal: formData?.extension,
+        IP: formData?.ip,
+        Patrimonio: formData?.patrimony,
+      },
     });
-  }
 
-  async get({ pageSize, currentPage }: any) {
-    return new Promise((resolve, reject) => {
-      resolve({
-        data: this.tickets,
-        totalPages: 1,
-        currentPage: 1,
+    try {
+      const fileBuffer = file.buffer;
+      const base64Data = fileBuffer.toString('base64');
+
+      const fileData = await API().post('/Tickets/CreateAttachment', {
+        SessionID,
+        TicketID: data.TicketID,
+        File: {
+          Filename: formData?.filename,
+          ContentType: file.mimetype,
+          Content: base64Data,
+        },
       });
-    });
+    } catch (error) {
+      console.log(error);
+    }
+    return data;
   }
-  async search(word: string) {
-    return new Promise((resolve, reject) => {
-      const filter = this.tickets.filter(
-        ({ ticket, title, status }: any) =>
-          ticket.includes(word) ||
-          title.includes(word) ||
-          status.includes(word),
-      );
-      resolve(filter);
+
+  async formatTicket(
+    data: any,
+    SessionID: string,
+    pageSize: any = 0,
+    currentPage: any = 0,
+  ) {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+
+    const paginatedItems =
+      pageSize > 0 ? data.slice(startIndex, endIndex) : data;
+
+    return await Promise.all(
+      paginatedItems.map(async (ticket: any) => {
+        const item = setIconStatus(ticket);
+        const date = formatDate(ticket.Created);
+
+        const articles = await API().post('/Tickets/GetArticles', {
+          SessionID,
+          TicketID: ticket.TicketID,
+        });
+
+        const formattedArticles = await this.formatArticle(articles.data);
+
+        return {
+          id: ticket.TicketID,
+          title: ticket.Title,
+          ticket: ticket.TicketNumber,
+          status: ticket.State,
+
+          detail: formattedArticles.pop(),
+
+          type: ticket.Type,
+          priority: ticket.Priority,
+          attendant: ticket.Owner,
+          queue: ticket.Queue,
+          date,
+          userId: ticket.OwnerID,
+          color: item.color,
+          icon: item.icon,
+        };
+      }),
+    );
+  }
+
+  async getAll({ pageSize, currentPage }: any, SessionID: string) {
+    const { data } = await API().post('/Tickets/GetTicketList', {
+      SessionID,
+      // CustomerGetTicketList: process.env.CustomerGetTicketList,
     });
+
+    const result = await this.formatTicket(
+      data.Tickets,
+      SessionID,
+      pageSize,
+      currentPage,
+    );
+
+    const totalPages: number = Math.ceil(data.Tickets.length / pageSize);
+
+    return {
+      data: result,
+      totalPages: totalPages,
+      currentPage: currentPage,
+    };
+  }
+
+  async formatArticle(data: any) {
+    return await Promise.all(
+      Object.keys(data.Articles).map(async (key: any) => {
+        const ticket = data.Articles[key];
+
+        const date = formatDate(ticket.CreateTime);
+
+        return {
+          ticketNumber: ticket.TicketNumber,
+          title: ticket.Title,
+          attendant: ticket.Responsible,
+          queue: ticket.Queue,
+          detail: ticket.Body || '-',
+          date,
+          status: ticket.State,
+          icon: setIconStatus(ticket, 'icon'),
+          color: setIconStatus(ticket, 'color'),
+        };
+      }),
+    );
+  }
+
+  async get(id: number, SessionID: string) {
+    const [ticket, aticles] = await Promise.all([
+      API().post('/Tickets/GetTicketDeep', {
+        SessionID,
+        TicketID: id,
+        GetAllArticleAttachments: '1',
+        CustomerGetTicket: '1',
+      }),
+
+      API().post('/Tickets/GetArticles', {
+        SessionID,
+        TicketID: id,
+      }),
+    ]);
+
+    const resultTicket = await this.formatTicket(
+      ticket.data.Tickets,
+      SessionID,
+    );
+    const result = await this.formatArticle(aticles.data);
+    return {
+      data: {
+        ...resultTicket[0],
+        details: [...result],
+      },
+    };
+  }
+
+  async search(word: string, SessionID: string) {
+    const { data } = await API().post('/Tickets/GetTicketList', {
+      SessionID,
+      CustomerGetTicketList: process.env.CustomerGetTicketList,
+    });
+
+    const filter = await this.filterByKeyword(data.Tickets, word);
+    const result = this.formatTicket(filter, SessionID);
+
+    return result;
+  }
+
+  async filterByKeyword(data: any, keyword: any) {
+    return await Promise.all(
+      data.filter((objeto) => {
+        return Object.values(objeto).some(
+          (valor) =>
+            typeof valor === 'string' &&
+            valor.toLowerCase().includes(keyword.toLowerCase()),
+        );
+      }),
+    );
   }
 }

@@ -1,36 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { ServiceServiceInterface } from './service.interface';
+import { CategoryServiceInterface } from './category.interface';
 import { API } from 'src/api/Api';
 
 @Injectable()
-export class ServiceService implements ServiceServiceInterface {
+export class CategoryService implements CategoryServiceInterface {
   constructor() {}
 
   formatData(data: any, cod: string) {
     const arrUnique = new Set();
-    const serviceList = [];
+    const categoryList = [];
 
-    for (const service of data) {
-      const split = service.Title.split('::');
-      const value = split[3];
+    for (const category of data) {
+      const split = category.Title.split('::');
+      const value = split[2];
 
       if (
-        split.length === 4 &&
+        split.length === 3 &&
         !arrUnique.has(value) &&
-        service.Title.includes(cod)
+        category.Title.includes(cod)
       ) {
         arrUnique.add(value);
-        serviceList.push({
+        categoryList.push({
           title: value,
-          id: service.ID,
-          cod: `${split[0]}::${split[1]}::${split[2]}::${value}`,
-
-          icon: 'PhBrowsers',
+          id: category.ID,
+          cod: `${split[0]}::${split[1]}::${value}`,
         });
       }
     }
 
-    return serviceList;
+    return categoryList;
   }
 
   filterByKeyword(data: any, keyword: any) {

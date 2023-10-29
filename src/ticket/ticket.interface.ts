@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
 
 export interface DetailProps {
   id?: number;
@@ -7,7 +7,7 @@ export interface DetailProps {
   title: string;
   attendant: string;
   queue: string;
-  detalhe: string;
+  detail: string;
   date: string;
 }
 
@@ -26,31 +26,54 @@ export interface TicketProps {
   detail: DetailProps[];
 }
 
-export class TicketCreateProps {
+export class TicketDTO {
   @IsString()
   @IsNotEmpty()
-  readonly title: string;
+  readonly codCatalog: string;
 
   @IsString()
-  readonly type: string;
+  @IsNotEmpty()
+  readonly codCategory: string;
 
   @IsString()
-  readonly priority: string;
+  @IsNotEmpty()
+  readonly codService: string;
 
+  @IsNotEmpty()
   @IsString()
-  readonly attendant: string;
+  readonly subject: string;
 
+  @IsNotEmpty()
   @IsString()
-  readonly queue: string;
+  readonly detail: string;
 
+  @IsOptional()
   @IsString()
-  readonly date: string;
+  readonly recipient: string;
 
+  @IsOptional()
   @IsString()
-  readonly status: string;
+  readonly telephone: string;
 
-  @IsNumber()
-  readonly userId: number;
+  @IsOptional()
+  @IsString()
+  readonly extension: string;
+
+  @IsOptional()
+  @IsString()
+  readonly ip: string;
+
+  @IsOptional()
+  @IsString()
+  readonly patrimony: string;
+
+  @IsOptional()
+  @IsString()
+  readonly file: string;
+
+  @IsOptional()
+  @IsString()
+  readonly filename: string;
 }
 
 export class TicketGetProps {
@@ -64,7 +87,12 @@ export class TicketGetProps {
 }
 
 export abstract class TicketServiceInterface {
-  abstract create(body: TicketCreateProps);
-  abstract get(userId: number);
-  abstract search(word: string, userId: number);
+  abstract create(
+    body: TicketDTO,
+    file: any,
+    SessionID: string,
+    userID: number,
+  );
+  abstract get(pag: any, SessionID: string);
+  abstract search(word: string, SessionID: string);
 }
