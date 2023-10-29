@@ -87,7 +87,12 @@ export class TicketGetProps {
 }
 
 export abstract class TicketServiceInterface {
-  abstract create(body: TicketDTO, file: any, SessionID: string);
+  abstract create(
+    body: TicketDTO,
+    file: any,
+    SessionID: string,
+    userID: number,
+  );
   abstract get(pag: any, SessionID: string);
   abstract search(word: string, SessionID: string);
 }

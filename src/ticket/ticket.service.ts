@@ -8,7 +8,7 @@ import { API } from 'src/api/Api';
 export class TicketService implements TicketServiceInterface {
   constructor() {}
 
-  async create(formData: any, file: any, SessionID: string) {
+  async create(formData: any, file: any, SessionID: string, userID: number) {
     const { data } = await API().post('/Tickets/CreateTicket', {
       SessionID,
       CustomerGetTicketList: process.env.CustomerGetTicketList,
@@ -19,10 +19,10 @@ export class TicketService implements TicketServiceInterface {
       QueueID: '1',
       SLAID: 1,
 
-      ServiceID: formData?.codService,
-      CustomerUserID: formData?.id,
-      Title: formData?.subject,
-      Body: formData?.detail,
+      ServiceID: formData.codService,
+      CustomerUserID: userID,
+      Title: formData.subject,
+      Body: formData.detail,
       DynamicFields: {
         Telefone: formData?.telephone,
         Ramal: formData?.extension,
@@ -32,6 +32,9 @@ export class TicketService implements TicketServiceInterface {
     });
 
     try {
+      const fileBuffer = file.buffer;
+      const base64Data = fileBuffer.toString('base64');
+
       const fileData = await API().post('/Tickets/CreateAttachment', {
         SessionID,
         TicketID: data.TicketID,
@@ -39,11 +42,11 @@ export class TicketService implements TicketServiceInterface {
         File: {
           Filename: formData?.filename,
           ContentType: 'text/plain',
-          Content: file,
+          Content: base64Data,
         },
       });
 
-      console.log(fileData.data);
+      console.log(fileData);
     } catch (error) {
       console.log(error);
     }
@@ -91,22 +94,6 @@ export class TicketService implements TicketServiceInterface {
           userId: ticket.OwnerID,
           color: item.color,
           icon: item.icon,
-
-          details: [
-            {
-              id: 2,
-              ticketId: 3,
-
-              title: 'Teste',
-              attendant: ticket.Responsible,
-              queue: ticket.Queue,
-              detalhe: ticket.Body || '-',
-              date,
-              status: ticket.State,
-              icon: setIconStatus(ticket, 'icon'),
-              color: setIconStatus(ticket, 'color'),
-            },
-          ],
         };
       }),
     );

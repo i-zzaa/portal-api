@@ -7,8 +7,8 @@ import {
   UseGuards,
   Query,
   Request,
-  UseInterceptors,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { TicketDTO, TicketGetProps } from './ticket.interface';
@@ -39,10 +39,17 @@ export class TicketController {
   create(
     @Body('form') formData: any,
     @Request() req: any,
-    @UploadedFile() file: any,
+    @UploadedFile() file,
   ) {
     const SessionID = req.user.session.SessionID;
-    return this.ticketService.create(formData, file, SessionID);
+    const userID = req.user.sub;
+
+    return this.ticketService.create(
+      JSON.parse(formData),
+      file,
+      SessionID,
+      userID,
+    );
   }
 
   @Get('search/:search')
