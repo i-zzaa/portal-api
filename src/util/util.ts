@@ -45,7 +45,8 @@ export enum STATUS {
 }
 
 export function setIconStatus(item, type?: 'icon' | 'color') {
-  switch (item.State.toLowerCase()) {
+  const state = item?.State.toLowerCase() || STATUS.encerrado;
+  switch (state) {
     case STATUS.reaberto:
     case STATUS.pending_reminder:
     case STATUS.pending_auto_close_plus:
