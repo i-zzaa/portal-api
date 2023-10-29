@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CatalogServiceInterface } from './catalog.interface';
 import { setIconCatalog } from 'src/util/util';
-import { API } from 'src/api/Api';
+import { API } from 'src/api/api';
 
 @Injectable()
 export class CatalogService implements CatalogServiceInterface {
