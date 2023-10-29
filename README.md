@@ -46,7 +46,7 @@ $ yarn install
 $ yarn build
 
 # Execute a aplicação em modo de produção
-$ yarn start
+$ yarn start:prod
 
 # O servidor inciará
 
