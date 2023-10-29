@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TicketServiceInterface } from './ticket.interface';
+import { TicketDTO, TicketServiceInterface } from './ticket.interface';
 import { setIconStatus } from 'src/util/util';
 import { formatDate } from 'src/util/format-date';
 import { API } from 'src/api/Api';
@@ -8,7 +8,12 @@ import { API } from 'src/api/Api';
 export class TicketService implements TicketServiceInterface {
   constructor() {}
 
-  async create(formData: any, file: any, SessionID: string, userID: number) {
+  async create(
+    formData: TicketDTO,
+    file: any,
+    SessionID: string,
+    userID: number,
+  ) {
     const { data } = await API().post('/Tickets/CreateTicket', {
       SessionID,
       CustomerGetTicketList: process.env.CustomerGetTicketList,
@@ -38,19 +43,15 @@ export class TicketService implements TicketServiceInterface {
       const fileData = await API().post('/Tickets/CreateAttachment', {
         SessionID,
         TicketID: data.TicketID,
-        ArticleID: 13,
         File: {
           Filename: formData?.filename,
-          ContentType: 'text/plain',
+          ContentType: file.mimetype,
           Content: base64Data,
         },
       });
-
-      console.log(fileData);
     } catch (error) {
       console.log(error);
     }
-
     return data;
   }
 
@@ -104,8 +105,6 @@ export class TicketService implements TicketServiceInterface {
       SessionID,
       // CustomerGetTicketList: process.env.CustomerGetTicketList,
     });
-
-    console.log(data.Tickets.length);
 
     const result = await this.formatTicket(
       data.Tickets,
