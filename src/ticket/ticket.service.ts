@@ -19,28 +19,34 @@ export class TicketService implements TicketServiceInterface {
       QueueID: '1',
       SLAID: 1,
 
-      ServiceID: formData.codService,
-      CustomerUserID: formData.id,
-      Title: formData.subject,
-      Body: formData.detail,
+      ServiceID: formData?.codService,
+      CustomerUserID: formData?.id,
+      Title: formData?.subject,
+      Body: formData?.detail,
       DynamicFields: {
-        Telefone: formData.telephone,
-        Ramal: formData.extension,
-        IP: formData.id,
-        Patrimonio: formData.patrimony,
+        Telefone: formData?.telephone,
+        Ramal: formData?.extension,
+        IP: formData?.ip,
+        Patrimonio: formData?.patrimony,
       },
     });
 
-    await API().post('/Tickets/CreateAttachment', {
-      SessionID,
-      TicketID: data.TicketID,
-      ArticleID: 13,
-      File: {
-        Filename: formData?.filename,
-        ContentType: 'text/plain',
-        Content: file,
-      },
-    });
+    try {
+      const fileData = await API().post('/Tickets/CreateAttachment', {
+        SessionID,
+        TicketID: data.TicketID,
+        ArticleID: 13,
+        File: {
+          Filename: formData?.filename,
+          ContentType: 'text/plain',
+          Content: file,
+        },
+      });
+
+      console.log(fileData.data);
+    } catch (error) {
+      console.log(error);
+    }
 
     return data;
   }
@@ -119,9 +125,11 @@ export class TicketService implements TicketServiceInterface {
       currentPage,
     );
 
+    const totalPages: number = Math.ceil(data.Tickets.length / pageSize);
+
     return {
       data: result,
-      totalPages: data.length,
+      totalPages: totalPages,
       currentPage: currentPage,
     };
   }

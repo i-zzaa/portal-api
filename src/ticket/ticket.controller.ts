@@ -39,7 +39,7 @@ export class TicketController {
   create(
     @Body('form') formData: any,
     @Request() req: any,
-    @UploadedFile('file') file: any,
+    @UploadedFile() file: any,
   ) {
     const SessionID = req.user.session.SessionID;
     return this.ticketService.create(formData, file, SessionID);
