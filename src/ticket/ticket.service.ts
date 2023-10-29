@@ -183,7 +183,7 @@ export class TicketService implements TicketServiceInterface {
     });
 
     const filter = await this.filterByKeyword(data.Tickets, word);
-    const result = this.formatTicket(filter, word);
+    const result = this.formatTicket(filter, SessionID);
 
     return result;
   }
