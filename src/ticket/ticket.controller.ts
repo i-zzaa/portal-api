@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
-import { TicketDTO, TicketGetProps } from './ticket.interface';
+import { TicketGetProps } from './ticket.interface';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 
