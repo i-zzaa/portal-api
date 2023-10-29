@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ServiceServiceInterface } from './service.interface';
-import { API } from 'src/api/Api';
+import { API } from 'src/api/api';
 
 @Injectable()
 export class ServiceService implements ServiceServiceInterface {

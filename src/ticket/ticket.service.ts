@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TicketDTO, TicketServiceInterface } from './ticket.interface';
 import { setIconStatus } from 'src/util/util';
 import { formatDate } from 'src/util/format-date';
-import { API } from 'src/api/Api';
+import { API } from 'src/api/api';
 
 @Injectable()
 export class TicketService implements TicketServiceInterface {
