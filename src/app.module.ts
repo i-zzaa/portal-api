@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -9,19 +9,16 @@ import { ServiceController } from './service/service.controller';
 import { TicketController } from './ticket/ticket.controller';
 import { ServiceService } from './service/service.service';
 import { TicketService } from './ticket/ticket.service';
-import { PrismaService } from './prisma.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 
 import * as cors from 'cors';
 import { CategoryService } from './category/category.service';
 import { CategoryController } from './category/category.controller';
 
 import * as session from 'express-session';
-import * as passport from 'passport';
 
 @Module({
-  imports: [AuthModule, UsersModule],
+  imports: [AuthModule],
   controllers: [
     TicketController,
     ServiceController,
@@ -36,7 +33,6 @@ import * as passport from 'passport';
     CatalogService,
     CategoryService,
 
-    PrismaService,
     AppService,
   ],
 })

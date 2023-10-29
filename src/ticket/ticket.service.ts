@@ -102,8 +102,10 @@ export class TicketService implements TicketServiceInterface {
   async getAll({ pageSize, currentPage }: any, SessionID: string) {
     const { data } = await API().post('/Tickets/GetTicketList', {
       SessionID,
-      CustomerGetTicketList: process.env.CustomerGetTicketList,
+      // CustomerGetTicketList: process.env.CustomerGetTicketList,
     });
+
+    console.log(data.Tickets.length);
 
     const result = await this.formatTicket(
       data.Tickets,
