@@ -44,7 +44,7 @@ export enum STATUS {
   concluido = 'concluído',
 }
 
-export function setIconStatus(item, type?: 'icon' | 'color') {
+export function setIconStatus(item, type?: 'icon' | 'color' | 'status') {
   const state = item?.State.toLowerCase() || STATUS.encerrado;
   switch (state) {
     case STATUS.reaberto:
@@ -59,6 +59,7 @@ export function setIconStatus(item, type?: 'icon' | 'color') {
     case STATUS.reajustar:
       item.icon = 'PhArrowsClockwise';
       item.color = 'reaberto';
+      item.status = 'Reaberto';
       break;
     case STATUS.encerrado:
     case STATUS.removed:
@@ -69,6 +70,8 @@ export function setIconStatus(item, type?: 'icon' | 'color') {
     case STATUS.cancelado:
       item.icon = 'PhCheck';
       item.color = 'encerrado';
+      item.status = 'Encerrado';
+
       break;
     case STATUS.closed_successful:
     case STATUS.resolvido:
@@ -76,6 +79,8 @@ export function setIconStatus(item, type?: 'icon' | 'color') {
     case STATUS.concluido:
       item.icon = 'PhCheck';
       item.color = 'resolvido';
+      item.status = 'Resolvido';
+
       break;
     case STATUS.novo:
     case STATUS.open:
@@ -84,10 +89,14 @@ export function setIconStatus(item, type?: 'icon' | 'color') {
     case STATUS.em_andamento:
       item.icon = 'PhTicket';
       item.color = 'novo';
+      item.status = 'Novo';
+
       break;
     default:
       item.icon = 'PhTicket';
       item.color = 'encerrado';
+      item.status = '-';
+
       break;
   }
 

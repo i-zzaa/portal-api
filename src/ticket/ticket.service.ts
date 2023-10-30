@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { TicketDTO, TicketServiceInterface } from './ticket.interface';
+import {
+  TicketDTO,
+  TicketReplyDTO,
+  TicketServiceInterface,
+} from './ticket.interface';
 import { setIconStatus } from 'src/util/util';
 import { formatDate } from 'src/util/format-date';
 import { API } from 'src/api/api';
@@ -55,6 +59,39 @@ export class TicketService implements TicketServiceInterface {
     return data;
   }
 
+  async createReplay(formData: TicketReplyDTO, file: any, SessionID: string) {
+    const { data } = await API().post('/Tickets/CreateArticle', {
+      SessionID,
+      TicketID: formData.ticketId,
+
+      Subject: formData.subject,
+      Body: formData.detail,
+    });
+
+    try {
+      const fileBuffer = file.buffer;
+      const base64Data = fileBuffer.toString('base64');
+
+      const fileData = await API().post('/Tickets/CreateAttachment', {
+        SessionID,
+        TicketID: `${formData.ticketId}`,
+        ArticleID: `${data.ArticleID}`,
+
+        File: {
+          Filename: formData?.filename,
+          ContentType: file.mimetype,
+          Content: base64Data,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    return {
+      ...data,
+      TicketID: formData.ticketId,
+    };
+  }
+
   async formatTicket(
     data: any,
     SessionID: string,
@@ -83,7 +120,7 @@ export class TicketService implements TicketServiceInterface {
           id: ticket.TicketID,
           title: ticket.Title,
           ticket: ticket.TicketNumber,
-          status: ticket.State,
+          status: item.status,
 
           detail: formattedArticles.pop(),
 
@@ -128,6 +165,7 @@ export class TicketService implements TicketServiceInterface {
         const ticket = data.Articles[key];
 
         const date = formatDate(ticket.CreateTime);
+        const item = setIconStatus(ticket);
 
         return {
           ticketNumber: ticket.TicketNumber,
@@ -136,9 +174,9 @@ export class TicketService implements TicketServiceInterface {
           queue: ticket.Queue,
           detail: ticket.Body || '-',
           date,
-          status: ticket.State,
-          icon: setIconStatus(ticket, 'icon'),
-          color: setIconStatus(ticket, 'color'),
+          status: item.status,
+          icon: item.icon,
+          color: item.color,
         };
       }),
     );

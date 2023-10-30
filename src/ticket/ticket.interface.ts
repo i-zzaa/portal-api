@@ -76,6 +76,27 @@ export class TicketDTO {
   readonly filename: string;
 }
 
+export class TicketReplyDTO {
+  @IsNotEmpty()
+  @IsString()
+  readonly subject: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly detail: string;
+
+  @IsOptional()
+  @IsString()
+  readonly ticketId: string;
+
+  @IsOptional()
+  @IsString()
+  readonly file: string;
+
+  @IsOptional()
+  @IsString()
+  readonly filename: string;
+}
 export class TicketGetProps {
   @IsString()
   @IsNotEmpty()
@@ -93,6 +114,7 @@ export abstract class TicketServiceInterface {
     SessionID: string,
     userID: number,
   );
+  abstract createReplay(body: TicketReplyDTO, file: any, SessionID: string);
   abstract get(pag: any, SessionID: string);
   abstract search(word: string, SessionID: string);
 }
