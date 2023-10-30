@@ -3,7 +3,6 @@ import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
-@UseGuards(AuthGuard('jwt'))
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -12,6 +11,7 @@ export class AppController {
     return this.appService.getVersion();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get('network')
   getInterfaceNetwork() {
     return this.appService.getInterfaceNetwork();
