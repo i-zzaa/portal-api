@@ -92,20 +92,9 @@ export class TicketService implements TicketServiceInterface {
     };
   }
 
-  async formatTicket(
-    data: any,
-    SessionID: string,
-    pageSize: any = 0,
-    currentPage: any = 0,
-  ) {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-
-    const paginatedItems =
-      pageSize > 0 ? data.slice(startIndex, endIndex) : data;
-
+  async formatTicket(data: any, SessionID: string) {
     return await Promise.all(
-      paginatedItems.map(async (ticket: any) => {
+      data.map(async (ticket: any) => {
         const item = setIconStatus(ticket);
         const date = formatDate(ticket.Created);
 
@@ -140,18 +129,13 @@ export class TicketService implements TicketServiceInterface {
   async getAll({ pageSize, currentPage }: any, SessionID: string) {
     const { data } = await API().post('/Tickets/GetTicketList', {
       SessionID,
-      Offset: 0,
-      Limit: 1000,
+      Offset: (currentPage - 1) * pageSize,
+      Limit: pageSize,
     });
 
-    const result = await this.formatTicket(
-      data.Tickets,
-      SessionID,
-      pageSize,
-      currentPage,
-    );
+    const result = await this.formatTicket(data.Tickets, SessionID);
 
-    const totalPages: number = Math.ceil(data.Tickets.length / pageSize);
+    const totalPages: number = Math.ceil(data.Count / pageSize);
 
     return {
       data: result,
