@@ -69,9 +69,13 @@ export class TicketController {
   }
 
   @Get('search/:search')
-  search(@Param('search') search: string, @Request() req: any) {
+  search(
+    @Query() query: TicketGetProps,
+    @Param('search') word: string,
+    @Request() req: any,
+  ) {
     const SessionID = req.user.session.SessionID;
 
-    return this.ticketService.search(search, SessionID);
+    return this.ticketService.search({ ...query, word }, SessionID);
   }
 }

@@ -195,27 +195,21 @@ export class TicketService implements TicketServiceInterface {
     };
   }
 
-  async search(word: string, SessionID: string) {
+  async search({ pageSize, currentPage, word }: any, SessionID: string) {
     const { data } = await API().post('/Tickets/GetTicketList', {
       SessionID,
-      CustomerGetTicketList: process.env.CustomerGetTicketList,
+      FullTextSearch: word,
+      Offset: (currentPage - 1) * pageSize,
+      Limit: pageSize,
     });
 
-    const filter = await this.filterByKeyword(data.Tickets, word);
-    const result = this.formatTicket(filter, SessionID);
+    const result = this.formatTicket(data.Tickets, SessionID);
+    const totalPages: number = Math.ceil(data.Count / pageSize);
 
-    return result;
-  }
-
-  async filterByKeyword(data: any, keyword: any) {
-    return await Promise.all(
-      data.filter((objeto) => {
-        return Object.values(objeto).some(
-          (valor) =>
-            typeof valor === 'string' &&
-            valor.toLowerCase().includes(keyword.toLowerCase()),
-        );
-      }),
-    );
+    return {
+      data: result,
+      totalPages: totalPages,
+      currentPage: currentPage,
+    };
   }
 }
