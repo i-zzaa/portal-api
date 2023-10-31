@@ -203,7 +203,7 @@ export class TicketService implements TicketServiceInterface {
       Limit: pageSize,
     });
 
-    const result = this.formatTicket(data.Tickets, SessionID);
+    const result = await this.formatTicket(data.Tickets, SessionID);
     const totalPages: number = Math.ceil(data.Count / pageSize);
 
     return {
