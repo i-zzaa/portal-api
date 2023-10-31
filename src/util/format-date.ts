@@ -1,9 +1,11 @@
-import { format } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { utcToZonedTime, format } from 'date-fns-tz';
+const fusoHorarioSaoPaulo = 'America/Sao_Paulo';
 
 export function formatDate(inputDateTime: any) {
-  const dataUTC = utcToZonedTime(new Date(inputDateTime), 'UTC');
-  const dataFormatada = format(dataUTC, 'dd/MM/yyyy HH:mm');
+  const dataUTC = new Date(inputDateTime);
+  const dataSaoPaulo = utcToZonedTime(dataUTC, fusoHorarioSaoPaulo);
+
+  const dataFormatada = format(dataSaoPaulo, 'dd/MM/yyyy HH:mm');
 
   return dataFormatada;
 }
