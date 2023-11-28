@@ -52,10 +52,30 @@ export class TicketController {
     );
   }
 
-  @Get('search/:search')
-  search(@Param('search') search: string, @Request() req: any) {
+  @Post('reply')
+  @UseInterceptors(FileInterceptor('file'))
+  createReplay(
+    @Body('form') formData: any,
+    @Request() req: any,
+    @UploadedFile() file,
+  ) {
     const SessionID = req.user.session.SessionID;
 
-    return this.ticketService.search(search, SessionID);
+    return this.ticketService.createReplay(
+      JSON.parse(formData),
+      file,
+      SessionID,
+    );
+  }
+
+  @Get('search/:search')
+  search(
+    @Query() query: TicketGetProps,
+    @Param('search') word: string,
+    @Request() req: any,
+  ) {
+    const SessionID = req.user.session.SessionID;
+
+    return this.ticketService.search({ ...query, word }, SessionID);
   }
 }
