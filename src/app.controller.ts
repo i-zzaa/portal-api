@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AutheticatedGuard } from './auth/autheticated.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {
@@ -13,7 +13,6 @@ export class AppController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('network')
-  @UseGuards(AutheticatedGuard)
   getInterfaceNetwork() {
     return this.appService.getInterfaceNetwork();
   }
